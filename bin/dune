@@ -1,5 +1,5 @@
 (executable
- (public_name locksmith2)
+ (public_name locksmith)
  (name main)
  (preprocess (pps ppx_enumerate))
- (libraries locksmith2 cmdliner))
+ (libraries locksmith cmdliner))

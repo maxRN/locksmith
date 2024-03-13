@@ -1,4 +1,4 @@
-open Locksmith2
+open Locksmith
 open Cmdliner
 
 type formats =
