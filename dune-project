@@ -5,22 +5,22 @@
 (generate_opam_files true)
 
 (source
- (github username/reponame))
+ (github maxrn/locksmith))
 
-(authors "Author Name")
+(authors "Max Große")
 
-(maintainers "Maintainer Name")
+(maintainers "Max Große")
 
-(license LICENSE)
+(license MIT)
 
 (documentation https://url/to/documentation)
 
 (package
  (name locksmith)
- (synopsis "A short synopsis")
- (description "A longer description")
+ (synopsis "Convert between password manager formats")
+ (description "Can convert between export formats of multiple password managers to make migrating easier.")
  (depends ocaml dune)
  (tags
-  (topics "to describe" your project)))
+  (password "password manager")))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
