@@ -1,1 +1,1 @@
-val make : SharedEntry.format
+val format : SharedEntry.format

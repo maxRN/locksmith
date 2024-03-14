@@ -14,8 +14,8 @@ let format_to_string = function
 let get_format format =
   let f =
     match format with
-    | BitWarden -> Bitwarden.make
-    | OnePassword -> OnePassword.make
+    | BitWarden -> Bitwarden.format
+    | OnePassword -> OnePassword.format
   in
   f
 ;;

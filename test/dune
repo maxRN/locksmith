@@ -1,2 +1,4 @@
 (test
- (name test_locksmith2))
+ (name test_formats)
+ (libraries alcotest locksmith)
+ )
