@@ -1,56 +1,40 @@
 open SharedEntry
 
 type keychain =
-  { folder : string option
-  ; favorite : string option
-  ; entry_type : string option
-  ; name : string option
+  { title : string
+  ; url : string
+  ; username : string
+  ; password : string
   ; notes : string option
-  ; fields : string option
-  ; reprompt : string option
-  ; login_uri : string option
-  ; login_username : string option
-  ; login_password : string option
-  ; login_totp : string option
+  ; otpAuth : string option
   }
+
+let header = "Title,URL,Username,Password,Notes,OTPAuth"
 
 let keychain_of_array row =
   let x = function
     | "" -> None
     | y -> Some y
   in
-  { folder = x row.(0)
-  ; favorite = x row.(1)
-  ; entry_type = x row.(2)
-  ; name = x row.(3)
+  { title = x row.(0)
+  ; url = x row.(1)
+  ; username = x row.(2)
+  ; password = x row.(3)
   ; notes = x row.(4)
-  ; fields = x row.(5)
-  ; reprompt = x row.(6)
-  ; login_uri = x row.(7)
-  ; login_username = x row.(8)
-  ; login_password = x row.(9)
-  ; login_totp = x row.(10)
+  ; otpAuth = x row.(5)
   }
 ;;
 
 let shared_entry_of_keychain entry =
-  { username = entry.login_username; password = entry.login_password }
+  { username = Some entry.username; password = Some entry.password }
 ;;
 
 let shared_entry_of_array array = shared_entry_of_keychain (keychain_of_array array)
 
 let keychain_of_shared_entry entry =
-  { folder = None
-  ; favorite = None
-  ; entry_type = None
-  ; name = None
-  ; notes = None
-  ; fields = None
-  ; reprompt = None
-  ; login_uri = None
-  ; login_username = entry.username
-  ; login_password = entry.password
-  ; login_totp = None
+  {
+    title = "Title";
+
   }
 ;;
 
