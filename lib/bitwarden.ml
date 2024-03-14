@@ -4,11 +4,12 @@ let header =
   "folder,favorite,entry,name,notes,fields,reprompt,login_uri,login_username,login_password,login_totp"
 ;;
 
+(* Find out what is really optional *)
 type bitwarden =
   { folder : string option
   ; favorite : string option
-  ; entry_type : string option
-  ; name : string option
+  ; entry_type : string
+  ; name : string
   ; notes : string option
   ; fields : string option
   ; reprompt : string option
@@ -17,7 +18,7 @@ type bitwarden =
   ; login_password : string option
   ; login_totp : string option
   }
-[@@deriving show, make]
+[@@deriving make]
 
 let bitwarden_of_array (row : string array) : bitwarden =
   let x = function
@@ -26,8 +27,8 @@ let bitwarden_of_array (row : string array) : bitwarden =
   in
   { folder = x row.(0)
   ; favorite = x row.(1)
-  ; entry_type = x row.(2)
-  ; name = x row.(3)
+  ; entry_type = Option.get (x row.(2)) (* TODO: check this *)
+  ; name = Option.get (x row.(3))
   ; notes = x row.(4)
   ; fields = x row.(5)
   ; reprompt = x row.(6)
@@ -38,25 +39,37 @@ let bitwarden_of_array (row : string array) : bitwarden =
   }
 ;;
 
-let shared_entry_of_bitwarden entry =
-  { username = entry.login_username; password = entry.login_password }
+let password_of_bitwarden entry =
+  { title = entry.name
+  ; url = entry.login_uri
+  ; notes = entry.notes
+  ; username = Option.get entry.login_username
+  ; password = Option.get entry.login_password
+  ; otpAuth = entry.login_totp
+  }
+;;
+
+let shared_entry_of_bitwarden (entry : bitwarden) =
+  match entry.entry_type with
+  | "login" -> SharedEntry.Password (password_of_bitwarden entry)
+  | _ -> failwith "Only handling login types"
 ;;
 
 let shared_entry_of_array array = shared_entry_of_bitwarden (bitwarden_of_array array)
 
+let bitwarden_of_password (password : password) =
+  make_bitwarden
+    ~entry_type:"login"
+    ~name:password.title
+    ~login_username:password.username
+    ~login_password:password.password
+    ()
+;;
+
 let bitwarden_of_shared_entry entry =
-  { folder = None
-  ; favorite = None
-  ; entry_type = None
-  ; name = None
-  ; notes = None
-  ; fields = None
-  ; reprompt = None
-  ; login_uri = None
-  ; login_username = entry.username
-  ; login_password = entry.password
-  ; login_totp = None
-  }
+  match entry with
+  | SharedEntry.Password p -> bitwarden_of_password p
+  | SharedEntry.Card _ -> failwith "Not handling this card"
 ;;
 
 let list_of_entry entry =
@@ -68,8 +81,8 @@ let list_of_entry entry =
     x
     [ entry.folder
     ; entry.favorite
-    ; entry.entry_type
-    ; entry.name
+    ; Some entry.entry_type
+    ; Some entry.name
     ; entry.notes
     ; entry.fields
     ; entry.reprompt
