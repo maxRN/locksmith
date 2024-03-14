@@ -1,10 +1,10 @@
 type entry =
-  { username : string
-  ; password : string
+  { username : string option
+  ; password : string option
   }
 [@@deriving show]
 
 type format =
-  { read : string -> entry
-  ; to_string : entry -> string
+  { read : string -> entry list
+  ; to_string : entry list -> string
   }

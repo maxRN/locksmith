@@ -20,20 +20,10 @@ let get_format format =
   f
 ;;
 
-let debug_info input output file =
-  print_endline
-    (Format.sprintf
-       "Converting %s from %s to %s\n"
-       file
-       (format_to_string input)
-       (format_to_string output))
-;;
-
 let convert input_format output_format file =
   let read = (get_format input_format).read in
   let to_string = (get_format output_format).to_string in
   let out = read file |> to_string in
-  debug_info input_format output_format file;
   print_endline out
 ;;
 
