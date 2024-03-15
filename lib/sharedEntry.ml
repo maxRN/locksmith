@@ -23,3 +23,8 @@ type format =
   { read : string -> entry list
   ; to_string : entry list -> string
   }
+
+let read_csv file =
+  let array = Csv.load file |> Csv.to_array in
+  Array.sub array 1 (Array.length array - 1)
+;;

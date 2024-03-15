@@ -1,0 +1,2 @@
+folder,favorite,entry,name,notes,fields,reprompt,login_uri,login_username,login_password,login_totp
+,,login,Gmail,,,,gmail.com,username@gmail.com,secret-keychain-password,

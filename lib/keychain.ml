@@ -89,8 +89,5 @@ let to_string (entries : entry list) =
   String.concat "\n" (header :: strings)
 ;;
 
-let read file =
-  Csv.load file |> Csv.to_array |> Array.map shared_entry_of_array |> Array.to_list
-;;
-
+let read file = read_csv file |> Array.map shared_entry_of_array |> Array.to_list
 let format = { read; to_string }

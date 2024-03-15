@@ -1,4 +1,4 @@
 (library
- (preprocess (pps ppx_deriving.show ppx_deriving.make))
+ (preprocess (pps ppx_deriving.show ))
  (libraries csv)
  (name locksmith))

@@ -18,7 +18,6 @@ type bitwarden =
   ; login_password : string option
   ; login_totp : string option
   }
-[@@deriving make]
 
 let bitwarden_of_array (row : string array) : bitwarden =
   let x = function
@@ -58,17 +57,21 @@ let shared_entry_of_bitwarden (entry : bitwarden) =
 let shared_entry_of_array array = shared_entry_of_bitwarden (bitwarden_of_array array)
 
 let bitwarden_of_password (password : password) =
-  let title =
-    match password.title with
-    | Some x -> x
-    | None -> "import title"
-  in
-  make_bitwarden
-    ~entry_type:"login"
-    ~name:title
-    ~login_username:password.username
-    ~login_password:password.password
-    ()
+  { folder = None
+  ; favorite = None
+  ; entry_type = "login"
+  ; name =
+      (match password.title with
+       | Some x -> x
+       | None -> "import title")
+  ; notes = password.notes
+  ; fields = None
+  ; reprompt = None
+  ; login_uri = password.url
+  ; login_username = Some password.username
+  ; login_password = Some password.password
+  ; login_totp = password.otpAuth
+  }
 ;;
 
 let bitwarden_of_shared_entry entry =
@@ -108,11 +111,5 @@ let to_string (entries : entry list) =
   output
 ;;
 
-let read file =
-  let array = Csv.load file |> Csv.to_array in
-  Array.sub array 1 (Array.length array - 1)
-  |> Array.map shared_entry_of_array
-  |> Array.to_list
-;;
-
+let read file = read_csv file |> Array.map shared_entry_of_array |> Array.to_list
 let format = { read; to_string }
