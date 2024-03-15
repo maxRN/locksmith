@@ -3,19 +3,19 @@ open Cmdliner
 
 type formats =
   | BitWarden
-  | OnePassword
+  | KeyChain
 [@@deriving enumerate]
 
 let format_to_string = function
   | BitWarden -> "bitWarden"
-  | OnePassword -> "onePassword"
+  | KeyChain -> "keyChain"
 ;;
 
 let get_format format =
   let f =
     match format with
     | BitWarden -> Bitwarden.format
-    | OnePassword -> OnePassword.format
+    | KeyChain -> Keychain.format
   in
   f
 ;;

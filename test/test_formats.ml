@@ -2,11 +2,17 @@ open Locksmith
 
 let test_parse_bitWarden_csv () =
   let f = Bitwarden.format in
-  let expected =
-    List.map
-      SharedEntry.show_entry
-      [ { username = Some "username"; password = Some "secret-password" } ]
+  let pw =
+    SharedEntry.Password
+      { title = Some "Gmail"
+      ; url = Some "gmail.com"
+      ; username = "username"
+      ; password = "secret-password"
+      ; notes = None
+      ; otpAuth = None
+      }
   in
+  let expected = List.map SharedEntry.show_entry [ pw ] in
   let actual =
     List.map SharedEntry.show_entry (f.read "testFixtures/bitwarden_export.csv")
   in

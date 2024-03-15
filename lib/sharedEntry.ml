@@ -1,5 +1,5 @@
 type password =
-  { title : string
+  { title : string option
   ; url : string option
   ; username : string
   ; password : string

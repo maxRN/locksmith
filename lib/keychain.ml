@@ -1,7 +1,7 @@
 open SharedEntry
 
 type keychain =
-  { title : string
+  { title : string option
   ; url : string
   ; username : string
   ; password : string
@@ -16,25 +16,49 @@ let keychain_of_array row =
     | "" -> None
     | y -> Some y
   in
-  { title = x row.(0)
-  ; url = x row.(1)
-  ; username = x row.(2)
-  ; password = x row.(3)
+  { title =
+      x row.(0)
+      (* No checks here, because we assume we get a proper keychain export file
+         which should include the required values (url, username, password) *)
+  ; url = row.(1)
+  ; username = row.(2)
+  ; password = row.(3)
   ; notes = x row.(4)
   ; otpAuth = x row.(5)
   }
 ;;
 
 let shared_entry_of_keychain entry =
-  { username = Some entry.username; password = Some entry.password }
+  Password
+    { title = entry.title
+    ; username = entry.username
+    ; password = entry.password
+    ; url = Some entry.url
+    ; notes = entry.notes
+    ; otpAuth = entry.otpAuth
+    }
+;;
+
+let filter_shared_entries (entries : entry list) : password list =
+  let filter = function
+    | Password x -> Some x
+    | _ -> None
+  in
+  List.filter_map filter entries
 ;;
 
 let shared_entry_of_array array = shared_entry_of_keychain (keychain_of_array array)
 
-let keychain_of_shared_entry entry =
-  {
-    title = "Title";
-
+let keychain_of_password (entry : SharedEntry.password) =
+  { title = entry.title
+  ; url =
+      (match entry.url with
+       | Some x -> x
+       | None -> "import.example.com")
+  ; username = entry.username
+  ; password = entry.password
+  ; notes = entry.notes
+  ; otpAuth = entry.otpAuth
   }
 ;;
 
@@ -45,27 +69,24 @@ let list_of_entry entry =
   in
   List.map
     x
-    [ entry.folder
-    ; entry.favorite
-    ; entry.entry_type
-    ; entry.name
+    [ entry.title
+    ; Some entry.url
+    ; Some entry.username
+    ; Some entry.password
     ; entry.notes
-    ; entry.fields
-    ; entry.reprompt
-    ; entry.login_uri
-    ; entry.login_username
-    ; entry.login_password
-    ; entry.login_totp
+    ; entry.otpAuth
     ]
 ;;
 
 let string_of_entry entry = String.concat "," (list_of_entry entry)
 
 let to_string (entries : entry list) =
-  let bw_entries = List.map keychain_of_shared_entry entries in
-  let strings = List.map string_of_entry bw_entries in
-  let output = String.concat "\n" strings in
-  output
+  let strings =
+    filter_shared_entries entries
+    |> List.map keychain_of_password
+    |> List.map string_of_entry
+  in
+  String.concat "\n" (header :: strings)
 ;;
 
 let read file =

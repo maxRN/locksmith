@@ -40,7 +40,7 @@ let bitwarden_of_array (row : string array) : bitwarden =
 ;;
 
 let password_of_bitwarden entry =
-  { title = entry.name
+  { title = Some entry.name
   ; url = entry.login_uri
   ; notes = entry.notes
   ; username = Option.get entry.login_username
@@ -58,9 +58,14 @@ let shared_entry_of_bitwarden (entry : bitwarden) =
 let shared_entry_of_array array = shared_entry_of_bitwarden (bitwarden_of_array array)
 
 let bitwarden_of_password (password : password) =
+  let title =
+    match password.title with
+    | Some x -> x
+    | None -> "import title"
+  in
   make_bitwarden
     ~entry_type:"login"
-    ~name:password.title
+    ~name:title
     ~login_username:password.username
     ~login_password:password.password
     ()
@@ -104,9 +109,10 @@ let to_string (entries : entry list) =
 ;;
 
 let read file =
-  let array = Csv.load file |> Csv.to_array |> Array.map shared_entry_of_array in
-  let array = Array.sub array 1 (Array.length array - 1) in
-  Array.to_list array
+  let array = Csv.load file |> Csv.to_array in
+  Array.sub array 1 (Array.length array - 1)
+  |> Array.map shared_entry_of_array
+  |> Array.to_list
 ;;
 
 let format = { read; to_string }
